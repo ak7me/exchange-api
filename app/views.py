@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form, HTTPException, status
 from typing import Annotated
-from db.core import get_connection
+from db.core import get_connection, dict_factory
 from schemas import Currency
 
 router = APIRouter()
@@ -9,8 +9,8 @@ router = APIRouter()
 def get_all_currencies():
     try:
         with get_connection() as connection:
-            cursor = connection.cursor()
-            return cursor.execute("SELECT * FROM Currencies").fetchall() # выводит [[], []] а надо [{}, {}]
+            connection.row_factory = dict_factory
+            return connection.execute("SELECT * FROM Currencies").fetchall() # выводит [[], []] а надо [{}, {}]
     except:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

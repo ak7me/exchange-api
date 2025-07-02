@@ -2,7 +2,7 @@ import sqlite3 as sq
 
 def get_connection():
     connection = sq.connect("/Users/ivan/Desktop/010.python-exchange/app/db/exchange.db")
-    connection.row_factory = sq.Row
+    # connection.row_factory = sq.Row
     return connection
 
 def init_db() -> None:
@@ -27,15 +27,21 @@ def init_db() -> None:
         )
         ''')
 
+def dict_factory(cursor, row):
+    fields = [column[0] for column in cursor.description]
+    return {key: value for key, value in zip(fields, row)}
+
 def get_all():
     with get_connection() as connection:
         cursor = connection.cursor()
         return cursor.execute("SELECT * FROM Currencies").fetchall()
     
 # with get_connection() as connection:
-#     cursor = connection.cursor()
-#     print(cursor.execute("SELECT * FROM Currencies").fetchall())
-#     print(cursor.execute(f"SELECT * FROM Currencies WHERE Code = 'USD'").fetchall())
+#     connection.row_factory = dict_factory
+#     for row in connection.execute("SELECT * FROM Currencies"):
+#         print(row)
+
+#     print(connection.execute("SELECT * FROM Currencies").fetchall())
 
 # init_db()
 
